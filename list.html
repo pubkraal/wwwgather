@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>hacky hacky hack hack</title>
+        <style>
+            body {
+                background-color: black;
+                color: #74f235;
+                font-family: monospace;
+            }
+
+            ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            li {
+                border: 1px solid #74f235;
+                margin-top: 1em;
+                padding: 0.5em;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h1>hacky list {{.Ident}}</h1>
+
+        <ul>
+            {{ range $idx, $row := .Rows }}
+            <li>
+                {{ $row }}
+            </li>
+            {{ end }}
+        </ul>
+    </body>
+</html>
