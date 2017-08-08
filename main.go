@@ -65,17 +65,18 @@ func listItems(w http.ResponseWriter, identifier string) {
 	t.Execute(w, p)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	// Figure out if there's a path to the request
-	// No path = index
-	// POST = store
-	// GET with ?store as parameter = store
-	// GET = list
-	// no Cors needed! lol!
+func getRemoteAddr(r *http.Request) string {
+	remoteAddr := r.RemoteAddr
+	if forwarded, ok := r.Header["X-Forwarded-For"]; ok {
+		return strings.Join(forwarded, " ")
+	}
+	return remoteAddr
+}
 
+func handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.Split(strings.Trim(r.URL.Path, "/"), "/")[0]
 
-	log.Println(r.Method, r.URL.Path, "-", r.RemoteAddr, "-", r.ContentLength)
+	log.Println(r.Method, r.URL.Path, "-", getRemoteAddr(r), "-", r.ContentLength)
 	if r.Method == "GET" {
 		listItems(w, path)
 	} else if r.Method == "POST" {
