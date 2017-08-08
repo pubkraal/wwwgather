@@ -35,7 +35,7 @@ type listRendering struct {
 
 // lists all stored items under the identifier
 func listItems(w http.ResponseWriter, identifier string) {
-	rows, err := databaseClient.Query("select data from items where ident = $1", identifier)
+	rows, err := databaseClient.Query("select data from items where ident = $1 order by ts desc", identifier)
 	if err != nil {
 		w.WriteHeader(500)
 		log.Println(err)

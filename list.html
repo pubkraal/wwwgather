@@ -17,6 +17,7 @@
                 border: 1px solid #74f235;
                 margin-top: 1em;
                 padding: 0.5em;
+                white-space: pre;
             }
 
         </style>
@@ -27,7 +28,7 @@
         <ul>
             {{ range $idx, $row := .Rows }}
             <li>
-                {{ $row }}
+{{ $row }}
             </li>
             {{ end }}
         </ul>
