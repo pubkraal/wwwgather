@@ -75,11 +75,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.Split(strings.Trim(r.URL.Path, "/"), "/")[0]
 
+	log.Println(r.Method, r.URL.Path, "-", r.RemoteAddr, "-", r.ContentLength)
 	if r.Method == "GET" {
-		log.Println("GETTING!")
 		listItems(w, path)
 	} else if r.Method == "POST" {
-		log.Println("POSTING!")
 		bd, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Println("Couldn't read body from POST request")
