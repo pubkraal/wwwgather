@@ -28,7 +28,8 @@
         <ul>
             {{ range $idx, $row := .Rows }}
             <li>
-{{ $row }}
+{{ $row.RemoteAddr }}:
+{{ $row.Value }}
             </li>
             {{ end }}
         </ul>

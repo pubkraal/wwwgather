@@ -19,23 +19,27 @@ var databaseClient *sql.DB
 
 // stores all data sent to the server based on the identifier.  Adds a
 // timestamp itself for some kind of ordering.
-func store(w http.ResponseWriter, identifier string, data string) {
-	q := "insert into items (ident, ts, data) VALUES ($1, $2, $3)"
+func store(w http.ResponseWriter, identifier string, data string, remote string) {
+	q := "insert into items (ident, ts, data) VALUES ($1, $2, $3, $4)"
 
-	databaseClient.Query(q, identifier, time.Now(), data)
+	databaseClient.Query(q, identifier, time.Now(), data, remote)
 
 	w.Write([]byte("Thanks!"))
+}
 
+type renderItem struct {
+	Value      string
+	RemoteAddr string
 }
 
 type listRendering struct {
 	Ident string
-	Rows  []string
+	Rows  []renderItem
 }
 
 // lists all stored items under the identifier
 func listItems(w http.ResponseWriter, identifier string) {
-	rows, err := databaseClient.Query("select data from items where ident = $1 order by ts desc", identifier)
+	rows, err := databaseClient.Query("select data, remote from items where ident = $1 order by ts desc", identifier)
 	if err != nil {
 		w.WriteHeader(500)
 		log.Println(err)
@@ -43,16 +47,19 @@ func listItems(w http.ResponseWriter, identifier string) {
 	}
 	defer rows.Close()
 
-	var values []string
+	var values []renderItem
 
 	for rows.Next() {
 		var data string
-		err := rows.Scan(&data)
+		var remote string
+		err := rows.Scan(&data, &remote)
 		if err != nil {
 			continue
 		}
 
-		values = append(values, data)
+		values = append(values, renderItem{
+			Value:      data,
+			RemoteAddr: remote})
 	}
 
 	p := listRendering{
@@ -86,7 +93,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(400)
 			w.Write([]byte("No thanks"))
 		}
-		store(w, path, string(bd[:]))
+		store(w, path, string(bd[:]), getRemoteAddr(r))
 	} else {
 		w.WriteHeader(400)
 		w.Write([]byte("Method not supported"))
