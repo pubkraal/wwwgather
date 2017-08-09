@@ -24,7 +24,7 @@ func store(w http.ResponseWriter, identifier string, data string, remote string)
 
 	_, err := databaseClient.Query(q, identifier, time.Now(), data, remote)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 
 	w.Write([]byte("Thanks!"))
