@@ -20,9 +20,12 @@ var databaseClient *sql.DB
 // stores all data sent to the server based on the identifier.  Adds a
 // timestamp itself for some kind of ordering.
 func store(w http.ResponseWriter, identifier string, data string, remote string) {
-	q := "insert into items (ident, ts, data) VALUES ($1, $2, $3, $4)"
+	q := "insert into items (ident, ts, data, remote) VALUES ($1, $2, $3, $4)"
 
-	databaseClient.Query(q, identifier, time.Now(), data, remote)
+	_, err := databaseClient.Query(q, identifier, time.Now(), data, remote)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	w.Write([]byte("Thanks!"))
 }
